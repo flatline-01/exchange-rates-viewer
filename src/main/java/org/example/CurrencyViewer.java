@@ -5,7 +5,6 @@ import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Command;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -60,9 +59,7 @@ public class CurrencyViewer {
         if (data != null) {
             JSONObject currencies = data.getJSONObject("currencies");
             Set<String> keys = new TreeSet<>(currencies.keySet());
-            Iterator<String> iterator = keys.iterator();
-            while (iterator.hasNext()) {
-                String key = iterator.next();
+            for (String key : keys) {
                 System.out.printf("%-10s%s\n", key, currencies.getString(key));
             }
         }
