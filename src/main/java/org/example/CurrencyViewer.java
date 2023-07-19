@@ -1,6 +1,7 @@
 package org.example;
 
 import org.json.JSONObject;
+import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Command;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -8,13 +9,16 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-@Command(name = "cviewer", description = "Utility to view currencies exchange rates info.")
-public class CurrencyViewer{
+@Command(name = "cviewer",
+        mixinStandardHelpOptions = true,
+        description = "Utility to view currencies exchange rate information.")
+public class CurrencyViewer {
     @Command(name = "getrates",
-            helpCommand = true,
-            description = "View the most recent exchange rate data.",
-            parameterListHeading = "base currencies")
-    public void getRates(String base, String[] currencies) {
+            description = "View the most recent exchange rate data.")
+    public void getRates(@Parameters(paramLabel = "base",
+                         description = "currency for which the rates are shown") String base,
+                         @Parameters(paramLabel = "currencies",
+                         description = "space-separated list of currencies") String[] currencies) {
         JSONObject data = API_Connection.getRates(base, currencies);
         if (data != null) {
             ZonedDateTime date = ZonedDateTime.parse(data.getJSONObject("meta").getString("last_updated_at"));
@@ -35,10 +39,10 @@ public class CurrencyViewer{
     }
 
     @Command(name = "convert",
-            helpCommand = true,
-            description = "Convert one currency to another.",
-            parameterListHeading = "amount from to")
-    public void convert(double amount, String from, String to) {
+            description = "Convert one currency to another.")
+    public void convert(@Parameters(paramLabel = "amount", description = "currency amount") double amount,
+                        @Parameters(paramLabel = "from", description = "currency to be converted from") String from,
+                        @Parameters(paramLabel = "to", description = "currency to be converted to") String to) {
         JSONObject data = API_Connection.convert(amount, from, to);
         if (data != null) {
             System.out.printf("%-15s%s\n", "Updated date:", data.getString("updated_date"));
@@ -51,7 +55,6 @@ public class CurrencyViewer{
     }
 
     @Command(name = "viewcurs",
-            helpCommand = true,
             description = "View list of available currencies.")
     public void viewCurrencies() {
         JSONObject data = API_Connection.getAvailableCurrencies();
