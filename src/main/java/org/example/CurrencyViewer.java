@@ -45,11 +45,10 @@ public class CurrencyViewer {
                         @Parameters(paramLabel = "to", description = "currency to be converted to") String to) {
         JSONObject data = API_Connection.convert(amount, from, to);
         if (data != null) {
-            System.out.printf("%-15s%s\n", "Updated date:", data.getString("updated_date"));
-            System.out.printf("%-15s%f\n", "Rate", data.getJSONObject("rates")
+            System.out.printf("%-20s%s\n", "Updated date:", data.getString("updated_date"));
+            System.out.printf("%-20s%f\n", "Rate", data.getJSONObject("rates")
                     .getJSONObject(to).getDouble("rate"));
-            System.out.printf("%-15s%f\n", "Rate for amount",
-                    data.getJSONObject("rates")
+            System.out.printf("%-20s%f\n", "Rate for amount", data.getJSONObject("rates")
                     .getJSONObject(to).getDouble("rate_for_amount"));
         }
     }
