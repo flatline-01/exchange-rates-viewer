@@ -20,8 +20,7 @@ public class CurrencyViewer {
                          description = "space-separated list of currencies") String[] currencies) {
         JSONObject data = API_Connection.getRates(base, currencies);
         if (data != null) {
-            ZonedDateTime date = ZonedDateTime.parse(data.getJSONObject("meta").getString("last_updated_at"));
-            String dateStr = date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+            String dateStr = getFormattedDateString(data.getJSONObject("meta").getString("last_updated_at"));
             if (currencies != null) {
                 System.out.printf("%s rates to %s at %s\n", base.toUpperCase(),
                         String.join(", ", currencies).toUpperCase(), dateStr);
@@ -35,6 +34,12 @@ public class CurrencyViewer {
                 System.out.printf("%-10s%f\n", currency.getString("code"), currency.getDouble("value"));
             }
         }
+    }
+
+    private String getFormattedDateString(String unformattedDateString) {
+        ZonedDateTime date = ZonedDateTime.parse(unformattedDateString);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        return date.format(formatter);
     }
 
     @Command(name = "convert",
