@@ -27,7 +27,7 @@ public class CurrencyViewer {
                 System.out.printf("%s rates to %s at %s\n", base.toUpperCase(),
                         String.join(", ", currencies).toUpperCase(), dateStr);
             } else {
-                System.out.printf("%s rates at %s\n", base, dateStr);
+                System.out.printf("%s rates at %s\n", base.toUpperCase(), dateStr);
             }
             JSONObject currencyData = data.getJSONObject("data");
             Set<String> keys = new TreeSet<>(currencyData.keySet());
