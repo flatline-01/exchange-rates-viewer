@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.exception.InvalidAmountException;
+import org.json.JSONException;
 import org.json.JSONObject;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Command;
@@ -19,7 +21,7 @@ public class CurrencyViewer {
                          @Parameters(paramLabel = "currencies",
                          description = "space-separated list of currencies") String[] currencies) {
         JSONObject data = API_Connection.getRates(base, currencies);
-        if (data != null) {
+        try{
             String dateStr = getFormattedDateString(data.getJSONObject("meta").getString("last_updated_at"));
             if (currencies != null) {
                 System.out.printf("%s rates to %s at %s\n", base.toUpperCase(),
@@ -33,6 +35,9 @@ public class CurrencyViewer {
                 JSONObject currency = currencyData.getJSONObject(key);
                 System.out.printf("%-10s%f\n", currency.getString("code"), currency.getDouble("value"));
             }
+        }
+        catch (JSONException e) {
+            System.out.println(data.getJSONObject("errors").getJSONArray("base_currency").get(0));
         }
     }
 
@@ -48,12 +53,20 @@ public class CurrencyViewer {
                         @Parameters(paramLabel = "from", description = "currency to be converted from") String from,
                         @Parameters(paramLabel = "to", description = "currency to be converted to") String to) {
         JSONObject data = API_Connection.convert(amount, from, to);
-        if (data != null) {
+        try {
+            if (amount <= 0)
+                throw new InvalidAmountException("The amount cannot be less or equal to 0.");
             System.out.printf("%-20s%s\n", "Updated date:", data.getString("updated_date"));
             System.out.printf("%-20s%f\n", "Rate", data.getJSONObject("rates")
                     .getJSONObject(to).getDouble("rate"));
             System.out.printf("%-20s%f\n", "Rate for amount", data.getJSONObject("rates")
                     .getJSONObject(to).getDouble("rate_for_amount"));
+        }
+        catch (JSONException e) {
+            System.out.println(data.getJSONObject("error").getString("message"));
+        }
+        catch (InvalidAmountException e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -61,12 +74,15 @@ public class CurrencyViewer {
             description = "View list of available currencies.")
     public void viewCurrencies() {
         JSONObject data = API_Connection.getAvailableCurrencies();
-        if (data != null) {
+        try {
             JSONObject currencies = data.getJSONObject("currencies");
             Set<String> keys = new TreeSet<>(currencies.keySet());
             for (String key : keys) {
                 System.out.printf("%-10s%s\n", key, currencies.getString(key));
             }
+        }
+        catch (JSONException e) {
+            System.out.println(data.getJSONObject("errors").getJSONArray("base_currency").get(0));
         }
     }
 }
