@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Properties;
 
 public class API_Connection {
     /*
@@ -15,6 +16,7 @@ public class API_Connection {
     * */
     private static final StringBuilder BASE_API_URL1 = new StringBuilder("https://api.getgeoapi.com/v2/currency/");
     private static final StringBuilder BASE_API_URL2 = new StringBuilder("https://api.currencyapi.com/v3/");
+    private static final Properties SYSTEM_PROPERTIES = System.getProperties();
 
     private static JSONObject getResponse(String url) {
         JSONObject jObj;
@@ -39,14 +41,14 @@ public class API_Connection {
     public static JSONObject getAvailableCurrencies() {
         BASE_API_URL1.append("list");
         BASE_API_URL1.append("?api_key=");
-        BASE_API_URL1.append(System.getenv("API_KEY1"));
+        BASE_API_URL1.append(SYSTEM_PROPERTIES.get("API_KEY1"));
         return getResponse(BASE_API_URL1.toString());
     }
 
     public static JSONObject convert(double amount, String from, String to) {
         BASE_API_URL1.append("convert");
         BASE_API_URL1.append("?api_key=");
-        BASE_API_URL1.append(System.getenv("API_KEY1"));
+        BASE_API_URL1.append(SYSTEM_PROPERTIES.get("API_KEY1"));
         BASE_API_URL1.append("&from=");
         BASE_API_URL1.append(from.toUpperCase());
         BASE_API_URL1.append("&to=");
@@ -58,7 +60,7 @@ public class API_Connection {
 
     public static JSONObject getRates(String base, String[] currencies) {
         BASE_API_URL2.append("latest?apikey=");
-        BASE_API_URL2.append(System.getenv("API_KEY2"));
+        BASE_API_URL2.append(SYSTEM_PROPERTIES.getProperty("API_KEY2"));
         BASE_API_URL2.append("&currencies=");
         if (currencies != null) {
             BASE_API_URL2.append(String.join(",", currencies).toUpperCase());
