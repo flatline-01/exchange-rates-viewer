@@ -3,6 +3,7 @@ package org.example;
 import org.example.exception.InvalidAmountException;
 import org.json.JSONException;
 import org.json.JSONObject;
+import picocli.CommandLine;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Command;
 import java.time.ZonedDateTime;
@@ -12,7 +13,8 @@ import java.util.TreeSet;
 
 @Command(name = "cviewer",
         mixinStandardHelpOptions = true,
-        description = "Utility to view currencies exchange rate information.")
+        description = "Utility to view currencies exchange rate information.",
+        subcommands = CommandLine.HelpCommand.class)
 public class CurrencyViewer {
     @Command(name = "getrates",
             description = "View the most recent exchange rate data.")
