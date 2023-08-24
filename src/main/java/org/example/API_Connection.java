@@ -50,9 +50,9 @@ public class API_Connection {
         BASE_API_URL1.append("?api_key=");
         BASE_API_URL1.append(SYSTEM_PROPERTIES.get("API_KEY1"));
         BASE_API_URL1.append("&from=");
-        BASE_API_URL1.append(from.toUpperCase());
+        BASE_API_URL1.append(from);
         BASE_API_URL1.append("&to=");
-        BASE_API_URL1.append(to.toUpperCase());
+        BASE_API_URL1.append(to);
         BASE_API_URL1.append("&amount=");
         BASE_API_URL1.append(amount);
         return getResponse(BASE_API_URL1.toString());
@@ -63,10 +63,10 @@ public class API_Connection {
         BASE_API_URL2.append(SYSTEM_PROPERTIES.getProperty("API_KEY2"));
         BASE_API_URL2.append("&currencies=");
         if (currencies != null) {
-            BASE_API_URL2.append(String.join(",", currencies).toUpperCase());
+            BASE_API_URL2.append(String.join(",", currencies));
         }
         BASE_API_URL2.append("&base_currency=");
-        BASE_API_URL2.append(base.toUpperCase());
+        BASE_API_URL2.append(base);
         return getResponse(BASE_API_URL2.toString());
     }
 }
