@@ -3,6 +3,7 @@ package org.example;
 import org.example.exception.CurrencyIsNotSupported;
 import org.example.exception.InvalidAmountException;
 import org.json.JSONObject;
+import org.slf4j.*;
 import picocli.CommandLine;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Command;
@@ -19,10 +20,13 @@ public class CurrencyViewer {
     private static final String FILE_NAME = "cviewer/currencies.txt";
     private static final File AVAILABLE_CURRENCIES_FILE;
     private static final String DELIMITER = "=";
-    private final static String CURRENCY_IS_NOT_SUPPORTED = "The currency %s is not supported.";
-    private final static String INVALID_AMOUNT = "The amount cannot be less or equal to 0.";
+    private static final String CURRENCY_IS_NOT_SUPPORTED = "The currency %s is not supported.";
+    private static final String INVALID_AMOUNT = "The amount cannot be less or equal to 0.";
+
+    private static final Logger logger;
 
     static {
+        logger = LoggerFactory.getLogger(CurrencyViewer.class);
         AVAILABLE_CURRENCIES_FILE = saveAvailableCurrenciesToFile();
     }
 
@@ -37,6 +41,7 @@ public class CurrencyViewer {
             currencies = Arrays.stream(currencies).map(String::toUpperCase).toArray(String[]::new);
 
         JSONObject data = API_Connection.getRates(base, currencies);
+        logger.info(String.format("The data obtained from API: %s", data.toString()));
 
         try {
             if (isNotSupported(base))
@@ -71,6 +76,7 @@ public class CurrencyViewer {
             }
         }
         catch (CurrencyIsNotSupported e) {
+            logger.info("User entered an unsupported currency.");
             System.out.println(e.getMessage());
         }
     }
@@ -89,6 +95,7 @@ public class CurrencyViewer {
         from = from.toUpperCase();
         to = to.toUpperCase();
         JSONObject data = API_Connection.convert(amount, from, to);
+        logger.info(String.format("The data obtained from API: %s", data.toString()));
         try {
             if (amount <= 0)
                 throw new InvalidAmountException(INVALID_AMOUNT);
@@ -102,8 +109,10 @@ public class CurrencyViewer {
             System.out.printf("%-20s%f\n", "Rate for amount", data.getJSONObject("rates")
                     .getJSONObject(to).getDouble("rate_for_amount"));
         } catch (InvalidAmountException e) {
+            logger.info("The amount entered by the user is less than or equal to 0.");
             System.out.println(e.getMessage());
         } catch (CurrencyIsNotSupported e) {
+            logger.info("User entered an unsupported currency.");
             System.out.println(e.getMessage());
         }
     }
@@ -120,13 +129,14 @@ public class CurrencyViewer {
             }
         }
         catch (IOException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
     }
 
     private static Map<String, Object> getAvailableCurrencies() {
         JSONObject data = API_Connection.getAvailableCurrencies();
         JSONObject currencies = data.getJSONObject("currencies");
+        logger.info(String.format("The data obtained from API: %s", data.toString()));
         return currencies.toMap();
     }
 
@@ -140,7 +150,7 @@ public class CurrencyViewer {
                     throw new IOException(String.format("Failed to create directory %s.", file.getPath()));
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
 
         try (FileWriter fw = new FileWriter(file);
@@ -150,7 +160,7 @@ public class CurrencyViewer {
                 bw.write(entry.getKey() + DELIMITER + entry.getValue() + "\n");
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
         return file;
     }
@@ -168,7 +178,7 @@ public class CurrencyViewer {
             }
         }
         catch (IOException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
         return isNotSupported;
     }
