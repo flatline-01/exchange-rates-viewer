@@ -39,34 +39,37 @@ public class API_Connection {
     }
 
     public static JSONObject getAvailableCurrencies() {
-        BASE_API_URL1.append("list");
-        BASE_API_URL1.append("?api_key=");
-        BASE_API_URL1.append(SYSTEM_PROPERTIES.get("API_KEY1"));
-        return getResponse(BASE_API_URL1.toString());
+        StringBuilder URL = new StringBuilder(BASE_API_URL1.toString());
+        URL.append("list");
+        URL.append("?api_key=");
+        URL.append(SYSTEM_PROPERTIES.get("API_KEY1"));
+        return getResponse(URL.toString());
     }
 
     public static JSONObject convert(double amount, String from, String to) {
-        BASE_API_URL1.append("convert");
-        BASE_API_URL1.append("?api_key=");
-        BASE_API_URL1.append(SYSTEM_PROPERTIES.get("API_KEY1"));
-        BASE_API_URL1.append("&from=");
-        BASE_API_URL1.append(from);
-        BASE_API_URL1.append("&to=");
-        BASE_API_URL1.append(to);
-        BASE_API_URL1.append("&amount=");
-        BASE_API_URL1.append(amount);
-        return getResponse(BASE_API_URL1.toString());
+        StringBuilder URL = new StringBuilder(BASE_API_URL1.toString());
+        URL.append("convert");
+        URL.append("?api_key=");
+        URL.append(SYSTEM_PROPERTIES.get("API_KEY1"));
+        URL.append("&from=");
+        URL.append(from);
+        URL.append("&to=");
+        URL.append(to);
+        URL.append("&amount=");
+        URL.append(amount);
+        return getResponse(URL.toString());
     }
 
     public static JSONObject getRates(String base, String[] currencies) {
-        BASE_API_URL2.append("latest?apikey=");
-        BASE_API_URL2.append(SYSTEM_PROPERTIES.getProperty("API_KEY2"));
-        BASE_API_URL2.append("&currencies=");
+        StringBuilder URL = new StringBuilder(BASE_API_URL2);
+        URL.append("latest?apikey=");
+        URL.append(SYSTEM_PROPERTIES.getProperty("API_KEY2"));
+        URL.append("&currencies=");
         if (currencies != null) {
-            BASE_API_URL2.append(String.join(",", currencies));
+            URL.append(String.join(",", currencies));
         }
-        BASE_API_URL2.append("&base_currency=");
-        BASE_API_URL2.append(base);
-        return getResponse(BASE_API_URL2.toString());
+        URL.append("&base_currency=");
+        URL.append(base);
+        return getResponse(URL.toString());
     }
 }
