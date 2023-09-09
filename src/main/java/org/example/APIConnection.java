@@ -9,7 +9,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Properties;
 
-public class API_Connection {
+public class APIConnection {
     /*
     * API1 - https://currency.getgeoapi.com/
     * API2 - https://app.currencyapi.com/
@@ -18,7 +18,7 @@ public class API_Connection {
     private static final StringBuilder BASE_API_URL2 = new StringBuilder("https://api.currencyapi.com/v3/");
     private static final Properties SYSTEM_PROPERTIES = System.getProperties();
 
-    private static JSONObject getResponse(String url) {
+    private JSONObject getResponse(String url) {
         JSONObject jObj;
         try {
             URI uri = new URI(url);
@@ -38,7 +38,7 @@ public class API_Connection {
         return jObj;
     }
 
-    public static JSONObject getAvailableCurrencies() {
+    public JSONObject getAvailableCurrencies() {
         StringBuilder URL = new StringBuilder(BASE_API_URL1.toString());
         URL.append("list");
         URL.append("?api_key=");
@@ -46,7 +46,7 @@ public class API_Connection {
         return getResponse(URL.toString());
     }
 
-    public static JSONObject convert(double amount, String from, String to) {
+    public JSONObject convert(double amount, String from, String to) {
         StringBuilder URL = new StringBuilder(BASE_API_URL1.toString());
         URL.append("convert");
         URL.append("?api_key=");
@@ -60,7 +60,7 @@ public class API_Connection {
         return getResponse(URL.toString());
     }
 
-    public static JSONObject getRates(String base, String[] currencies) {
+    public JSONObject getRates(String base, String[] currencies) {
         StringBuilder URL = new StringBuilder(BASE_API_URL2);
         URL.append("latest?apikey=");
         URL.append(SYSTEM_PROPERTIES.getProperty("API_KEY2"));

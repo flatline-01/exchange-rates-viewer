@@ -18,7 +18,7 @@ import java.util.*;
         subcommands = CommandLine.HelpCommand.class)
 public class CurrencyViewer {
     private static final String FILE_NAME = "cviewer/currencies.txt";
-    private static final File AVAILABLE_CURRENCIES_FILE;
+    private final File AVAILABLE_CURRENCIES_FILE;
     private static final String DELIMITER = "=";
     private static final String CURRENCY_IS_NOT_SUPPORTED = "The currency %s is not supported.";
     private static final String INVALID_AMOUNT = "The amount cannot be less or equal to 0.";
@@ -27,11 +27,18 @@ public class CurrencyViewer {
 
     static {
         logger = LoggerFactory.getLogger(CurrencyViewer.class);
+    }
+
+    private APIConnection apiConnection;
+
+    public CurrencyViewer() {
+        this.apiConnection = new APIConnection();
         AVAILABLE_CURRENCIES_FILE = saveAvailableCurrenciesToFile();
     }
 
     @Command(name = "getrates",
             description = "View the most recent exchange rate data.")
+
     public void getRates(@Parameters(paramLabel = "base",
                          description = "currency for which the rates are shown") String base,
                          @Parameters(paramLabel = "currencies",
@@ -40,7 +47,7 @@ public class CurrencyViewer {
         if (currencies != null)
             currencies = Arrays.stream(currencies).map(String::toUpperCase).toArray(String[]::new);
 
-        JSONObject data = API_Connection.getRates(base, currencies);
+        JSONObject data = apiConnection.getRates(base, currencies);
         logger.info(String.format("The data obtained from API: %s", data.toString()));
 
         try {
@@ -55,7 +62,7 @@ public class CurrencyViewer {
 
             String dateStr = getFormattedDateString(data.getJSONObject("meta").getString("last_updated_at"));
 
-            if (currencies == null) {
+            if (currencies == null || currencies.length == 0) {
                 System.out.printf("%s rates at %s\n", base, dateStr);
             }
             else if (currencies.length == 1) {
@@ -94,7 +101,7 @@ public class CurrencyViewer {
                         @Parameters(paramLabel = "to", description = "currency to be converted to") String to) {
         from = from.toUpperCase();
         to = to.toUpperCase();
-        JSONObject data = API_Connection.convert(amount, from, to);
+        JSONObject data = apiConnection.convert(amount, from, to);
         logger.info(String.format("The data obtained from API: %s", data.toString()));
         try {
             if (amount <= 0)
@@ -121,7 +128,7 @@ public class CurrencyViewer {
             description = "View list of available currencies.")
     public void viewCurrencies() {
         try (FileReader fr = new FileReader(AVAILABLE_CURRENCIES_FILE);
-             BufferedReader br = new BufferedReader(fr)){
+             BufferedReader br = new BufferedReader(fr)) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] data = line.split(DELIMITER);
@@ -133,14 +140,14 @@ public class CurrencyViewer {
         }
     }
 
-    private static Map<String, Object> getAvailableCurrencies() {
-        JSONObject data = API_Connection.getAvailableCurrencies();
+    private Map<String, Object> getAvailableCurrencies() {
+        JSONObject data = apiConnection.getAvailableCurrencies();
         JSONObject currencies = data.getJSONObject("currencies");
-        logger.info(String.format("The data obtained from API: %s", data.toString()));
+        logger.info(String.format("The data obtained from API: %s", data));
         return currencies.toMap();
     }
 
-    private static File saveAvailableCurrenciesToFile() {
+    private File saveAvailableCurrenciesToFile() {
         File file = new File(FILE_NAME);
         try {
             if (!file.getParentFile().exists()) {

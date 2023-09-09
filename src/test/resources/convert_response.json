@@ -1,0 +1,14 @@
+{
+  "amount": "50.0000",
+  "rates": {
+    "KGS": {
+      "currency_name": "Kyrgyzstani som",
+      "rate": "88.2546",
+      "rate_for_amount": "4412.7316"
+    }
+  },
+  "updated_date": "2023-09-04",
+  "base_currency_code": "USD",
+  "base_currency_name": "United States dollar",
+  "status": "success"
+}
