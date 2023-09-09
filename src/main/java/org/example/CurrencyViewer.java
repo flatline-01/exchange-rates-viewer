@@ -15,7 +15,8 @@ import java.util.*;
 @Command(name = "cviewer",
         mixinStandardHelpOptions = true,
         description = "Utility to view currencies exchange rate information.",
-        subcommands = CommandLine.HelpCommand.class)
+        subcommands = CommandLine.HelpCommand.class,
+        version = "1.0.0")
 public class CurrencyViewer {
     private static final String FILE_NAME = "cviewer/currencies.txt";
     private final File AVAILABLE_CURRENCIES_FILE;
